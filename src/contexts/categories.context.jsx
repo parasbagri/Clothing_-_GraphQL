@@ -23,10 +23,26 @@ collections{
 
 export const CategoriesProvider = ({ children }) => {
   const {loading, error, data} = useQuery(COLLECTIONS) // it is hook it eturns response
+  const [categoriesMap, setCategoriesMap] = useState({});
+
+  // transform the data using useEffact
+  useEffect(() =>{
+     if(data){
+       const {collections} = data; 
+      //  fatch the collection values from the data 
+      // const categoryMap = data.collections
+      const collectionsyMap = collections.reduce((acc, collection) => {
+         const{title, items} = collection;
+         acc[title.toLowerCase()] = items;
+         return acc;
+      }, {});
+
+      setCategoriesMap(collectionsyMap)
+     }
+  },[data])
   console.log("loading:", loading); 
   console.log(data);   // ab hume data mil rha hai ab isko hum use karenge 
 
-  const [categoriesMap, setCategoriesMap] = useState({});
 
   // useEffect(() => {
   //   const getCategoriesMap = async () => {
@@ -37,7 +53,7 @@ export const CategoriesProvider = ({ children }) => {
   //   getCategoriesMap();
   // }, []);
 
-  const value = { categoriesMap };
+  const value = { categoriesMap, loading };
   return (
     <CategoriesContext.Provider value={value}>
       {children}
